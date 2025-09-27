@@ -102,6 +102,16 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+
+    // Dependencia para el framework de mocking
+    testImplementation("io.mockk:mockk:1.13.10")
+
+    // Dependencia para probar corrutinas (contiene runTest)
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
+
+    // Dependencia para JUnit 4
+    testImplementation("junit:junit:4.13.2")
+
     testImplementation(libs.mockk)
 
 }
