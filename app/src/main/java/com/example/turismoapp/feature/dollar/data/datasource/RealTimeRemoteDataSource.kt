@@ -15,7 +15,7 @@ class RealTimeRemoteDataSource {
     suspend fun getDollarUpdates(): Flow<DollarModel> = callbackFlow {
         val callback = object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {
-                close(p0.toException()) // Aquí cierras el flujo si hay error
+                close(p0.toException())
             }
 
             override fun onDataChange(p0: DataSnapshot) {

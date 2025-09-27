@@ -5,6 +5,7 @@ import com.example.turismoapp.feature.dollar.data.datasource.RealTimeRemoteDataS
 import kotlinx.coroutines.flow.Flow
 import com.example.turismoapp.feature.dollar.domain.model.DollarModel
 import com.example.turismoapp.feature.dollar.domain.repository.IDollarRepository
+import kotlinx.coroutines.flow.flow
 
 import kotlinx.coroutines.flow.onEach
 
@@ -23,5 +24,11 @@ class DollarRepository(
             .onEach {
                 localDataSource.insert(it)
             }
+    }
+
+    override suspend fun getDollarHistory(): Flow<List<DollarModel>> {
+        return flow {
+            emit(localDataSource.getList())
+        }
     }
 }

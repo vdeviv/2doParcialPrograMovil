@@ -5,17 +5,22 @@ import com.example.turismoapp.feature.dollar.data.database.entity.DollarEntity
 import com.example.turismoapp.feature.dollar.domain.model.DollarModel
 
 
-fun DollarEntity.toModel() : DollarModel {
+fun DollarEntity.toModel(): DollarModel {
     return DollarModel(
-        dolarOficial = dolarOficial,
-        dolarParalelo = dolarParalelo
+        dolarOficialCompra = dolarOficialCompra,
+        dolarOficialVenta = dolarOficialVenta,
+        dolarParaleloCompra = dolarParaleloCompra,
+        dolarParaleloVenta = dolarParaleloVenta,
+        timestamp = timestamp
     )
 }
 
-
 fun DollarModel.toEntity(): DollarEntity {
     return DollarEntity(
-        dolarOficial = dolarOficial,
-        dolarParalelo = dolarParalelo
+        dolarOficialCompra = dolarOficialCompra,
+        dolarOficialVenta = dolarOficialVenta,
+        dolarParaleloCompra = dolarParaleloCompra,
+        dolarParaleloVenta = dolarParaleloVenta,
+        timestamp = timestamp
     )
 }

@@ -1,6 +1,5 @@
 package com.example.turismoapp.feature.dollar.presentation
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.turismoapp.feature.dollar.domain.model.DollarModel
@@ -10,13 +9,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import okhttp3.Dispatcher
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 class DollarViewModel(
-     val fetchDollarUseCase: FetchDollarUseCase
+    private val fetchDollarUseCase: FetchDollarUseCase,
 ) : ViewModel() {
 
     sealed class DollarUIState {
@@ -25,38 +23,32 @@ class DollarViewModel(
         class Success(val data: DollarModel) : DollarUIState()
     }
 
-     val _uiState = MutableStateFlow<DollarUIState>(DollarUIState.Loading)
+    private val _uiState = MutableStateFlow<DollarUIState>(DollarUIState.Loading)
     val uiState: StateFlow<DollarUIState> = _uiState
 
     init {
-        getDollar()
+        getDollarUpdates()
     }
 
-    fun getDollar() {
-        viewModelScope.launch (Dispatchers.IO){
-            getToken()
-            fetchDollarUseCase.invoke().collect {
-                data -> _uiState.value = DollarUIState.Success(data)
+    private fun getDollarUpdates() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                fetchDollarUseCase.invoke().collect { latestData ->
+                    _uiState.value = DollarUIState.Success(latestData)
+                }
+            } catch (e: Exception) {
+                _uiState.value = DollarUIState.Error(e.message ?: "Unknown error")
             }
         }
     }
 
     suspend fun getToken(): String = suspendCoroutine { continuation ->
-        FirebaseMessaging.getInstance().token
-            .addOnCompleteListener { task ->
-                if (!task.isSuccessful) {
-                    Log.w("FIREBASE", "getInstanceId failed", task.exception)
-                    continuation.resumeWithException(task.exception ?: Exception("Unknown error"))
-                    return@addOnCompleteListener
-                }
-                // Si la tarea fue exitosa, se obtiene el token
-                val token = task.result
-                Log.d("FIREBASE", "FCM Token: $token")
-
-
-                // Reanudar la ejecución con el token
-                continuation.resume(token ?: "")
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                continuation.resumeWithException(task.exception ?: Exception("Unknown error"))
+            } else {
+                continuation.resume(task.result ?: "")
             }
+        }
     }
-
 }
