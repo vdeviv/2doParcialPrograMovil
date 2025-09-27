@@ -1,5 +1,6 @@
 package com.example.turismoapp.di
 
+import androidx.room.Room
 import com.example.turismoapp.R
 import com.example.turismoapp.feature.dollar.data.database.AppRoomDatabase
 import com.example.turismoapp.feature.dollar.data.datasource.DollarLocalDataSource
@@ -15,15 +16,20 @@ import com.example.turismoapp.feature.github.domain.repository.IGithubRepository
 import com.example.turismoapp.feature.github.domain.usecase.FindByNickNameUseCase
 import com.example.turismoapp.feature.github.presentation.GithubViewModel
 import com.example.turismoapp.feature.movie.data.api.MovieService
+import com.example.turismoapp.feature.movie.data.database.MovieDatabase
 import com.example.turismoapp.feature.movie.data.datasource.MovieRemoteDataSource
 import com.example.turismoapp.feature.movie.data.repository.MovieRepository
 import com.example.turismoapp.feature.movie.domain.repository.IMoviesRepository
 import com.example.turismoapp.feature.movie.domain.usecase.FetchPopularMoviesUseCase
+import com.example.turismoapp.feature.movie.domain.usecase.UpdateMovieLikeStatusUseCase
 import com.example.turismoapp.feature.movie.presentation.PopularMoviesViewModel
 import com.example.turismoapp.feature.profile.presentation.ProfileViewModel
 import com.example.turismoapp.feature.profile.data.repository.ProfileRepository
 import com.example.turismoapp.feature.profile.domain.repository.IProfileRepository
 import com.example.turismoapp.feature.profile.domain.usecase.GetProfileUseCase
+
+import com.example.turismoapp.feature.movie.data.database.LikedMovieDao
+
 import okhttp3.OkHttpClient
 import org.koin.android.BuildConfig
 import org.koin.android.ext.koin.androidApplication
@@ -101,10 +107,28 @@ val appModule = module {
     single<MovieService> {
         get<Retrofit>(named(com.example.turismoapp.di.NetworkConstants.RETROFIT_MOVIE)).create(MovieService::class.java)
     }
+
+    // Database
+    single {
+        Room.databaseBuilder(
+            androidContext(),
+            MovieDatabase::class.java,
+            "movie_db"
+        ).build()
+    }
+    single { get<MovieDatabase>().likedMovieDao() }
+
+    // DataSources
     single { MovieRemoteDataSource(get(), get(named("apiKey"))) }
-    single<IMoviesRepository> { MovieRepository(get()) }
+
+    // Repositories
+    single<IMoviesRepository> { MovieRepository(get(), get()) }
+
+    // UseCases
     factory { FetchPopularMoviesUseCase(get()) }
-    viewModel{ PopularMoviesViewModel(get()) }
+    factory { UpdateMovieLikeStatusUseCase(get()) }
+
+    // ViewModels
+    viewModel { PopularMoviesViewModel(get(), get()) }
 
 }
-

@@ -17,7 +17,7 @@ fun AppNavigation() {
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Dollar.route
+        startDestination = Screen.PopularMovies.route
 
     ) {
         composable(Screen.Login.route) {

@@ -7,6 +7,19 @@ class FetchPopularMoviesUseCase(
     private val movieRepository: IMoviesRepository
 ) {
     suspend fun invoke(): Result<List<MovieModel>> {
-        return movieRepository.fetchPopularMovies()
+        val result = movieRepository.fetchPopularMovies()
+        return result.map { movies ->
+            val likedMovies = mutableListOf<MovieModel>()
+            val unlikedMovies = mutableListOf<MovieModel>()
+
+            movies.forEach { movie ->
+                if (movieRepository.isMovieLiked(movie.title)) {
+                    likedMovies.add(movie)
+                } else {
+                    unlikedMovies.add(movie)
+                }
+            }
+            likedMovies + unlikedMovies
+        }
     }
 }
