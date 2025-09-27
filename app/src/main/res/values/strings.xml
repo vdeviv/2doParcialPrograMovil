@@ -2,9 +2,6 @@
     <string name="app_name">TurismoApp</string>
 
     <string name="login_title">Iniciar sesión</string>
-    <string name="username">Usuario</string>
-    <string name="password">Contraseña</string>
-    <string name="login">Entrar</string>
 
     <string name="home_welcome_text">¡Bienvenido %s!</string>
     <string name="gitalias_input">Ingresa la cuenta de GitHub</string>
